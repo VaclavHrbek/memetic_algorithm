@@ -6,9 +6,8 @@
 
 #include <iostream>
 
-#include "genetic_program.hpp"
-#include "city.hpp"
-#include "genetic_program.cpp"
+#include <memetic_program/genetic_program.hpp>
+#include <memetic_program/city.hpp>
 
 std::shared_ptr<Node> make_tree_binary(){
 

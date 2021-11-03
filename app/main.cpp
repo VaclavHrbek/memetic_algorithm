@@ -1,5 +1,4 @@
-#include "genetic_program.hpp"
-#include "city.hpp"
+#include <memetic_program/genetic_program.hpp>
 
 int main(){
 	std::vector<std::pair<double, double>> vec{

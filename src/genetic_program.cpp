@@ -1,5 +1,5 @@
 
-#include "genetic_program.hpp"
+#include <memetic_program/genetic_program.hpp>
 
 // TODO Thing if best should advance?
 

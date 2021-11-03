@@ -1,56 +1,35 @@
 cmake_minimum_required(VERSION 3.16)
 
 # set the project name
-project(genetic_program)
+project(memetic_program)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-
 option(ENABLE_TESTS "Enable test" OFF)
+option(ENABLE_EXAMPLES "Enable examples" OFF)
 
-Include(FetchContent)
+# Require out-of-source builds
+file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
+if(EXISTS "${LOC_PATH}")
+    message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
+endif()
 
-add_library(city city.cpp city.hpp)
-add_library(genetic_program genetic_program.cpp genetic_program.hpp)
+# Add source file
+add_subdirectory(src)
 
-# add the executable
-add_executable(main main.cpp)
-
-target_compile_options(genetic_program PUBLIC -g -Wall -Wextra -pedantic)
-target_compile_options(city PUBLIC -g -Wall -Wextra -pedantic)
-
-target_link_libraries(main 
-	PRIVATE city
-	PRIVATE genetic_program)
-
+# Add the executable
+if(ENABLE_EXAMPLES)
+	include(CTest)
+	find_program( MEMORYCHECK_COMMAND valgrind )
+	set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full" )
+	add_subdirectory(app)
+endif()
 
 if(ENABLE_TESTS)
-
-
-	FetchContent_Declare(
-	  Catch2
-	  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-	  GIT_TAG        v3.0.0-preview3
-	)
-
-	FetchContent_MakeAvailable(Catch2)
-
-	list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-
-	include(CTest)
-	include(Catch)
-	enable_testing()
-	add_executable(tests
-		test_city.cpp
-		test_genetic_program.cpp)
-	target_link_libraries(tests 
-		PRIVATE Catch2::Catch2WithMain 
-		city
-		genetic_program)
-	catch_discover_tests(tests
-		TEST_PREFIX test__)
+	Include(FetchContent)
+	add_subdirectory(tests)
 
 endif()
 
