@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # set the project name
-project(memetic_program)
+project(memetic_algorithm)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -21,15 +21,15 @@ add_subdirectory(src)
 
 # Add the executable
 if(ENABLE_EXAMPLES)
-	include(CTest)
-	find_program( MEMORYCHECK_COMMAND valgrind )
-	set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full" )
 	add_subdirectory(app)
 endif()
 
 if(ENABLE_TESTS)
+	include(CTest)
+	find_program( MEMORYCHECK_COMMAND valgrind )
+	set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full" )
+
 	Include(FetchContent)
 	add_subdirectory(tests)
-
 endif()
 

@@ -3,8 +3,8 @@
 
 
 # Optionally glob, but only for CMake 3.12 or later:
-file(GLOB HEADER_LIST "${memetic_program_SOURCE_DIR}/include/memetic_algorithm/*.hpp")
-file(GLOB SOURCE_LIST "${memetic_program_SOURCE_DIR}/src/*.cpp")
+file(GLOB HEADER_LIST "${memetic_algorithm_SOURCE_DIR}/include/memetic_algorithm/*.hpp")
+file(GLOB SOURCE_LIST "${memetic_algorithm_SOURCE_DIR}/src/*.cpp")
 
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(genetic_program ${SOURCE_LIST} ${HEADER_LIST})
