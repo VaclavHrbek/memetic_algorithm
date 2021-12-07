@@ -6,19 +6,28 @@ Fitness::Fitness(){
 	_map = m;
 }
 
-double Fitness::value(){
+double Fitness::value() const {
 	return _value;
 }
 
-void Fitness::calculate_fitness(Collection<std::shared_ptr<Node>>& col){
+double random_real(){
+	std::default_random_engine e1(r());
+	std::uniform_real_distribution<> uniform_dist(0.0, 1000.0);
+	return uniform_dist(e1);
+}
+
+void Fitness::calculate_fitness(Collection<Node>& col){
 	_value = 0;
 	Collection<std::tuple<City, double>> route{};
-	for(std::size_t i = 0; i !=  _map.size(); i++){
+
+	auto rand_tuple = std::tuple<double>(_rand);
+	for(std::size_t i = 0; i != _map.size(); i++){
 		auto val = _map.at(i).get_values();
+		auto new_val = std::tuple_cat(val, rand_tuple);
 		//std::cout << "val.0 " << std::get<0>(val) << '\n';
 		//std::cout << "val.1 " << std::get<1>(val) << '\n';
 		//std::cout << "val.2 " << std::get<2>(val) << '\n';
-		auto score = fill_numerical_values(val, col);
+		auto score = fill_numerical_values(new_val, col);
 		route.push_back(std::make_tuple(_map.at(i), score));
 	}
 	// calculate route
@@ -52,10 +61,9 @@ void Fitness::calculate_fitness(Collection<std::shared_ptr<Node>>& col){
 	//std::cout << "Distance: ";
 	//std::cout << distance << '\n';
 	_value = distance;
-	
 }
 
-double return_terminal_value(std::tuple<double,double,double>& val, std::string s){
+double return_terminal_value(std::tuple<double,double,double,double>& val, std::string s){
 	if(s == "x"){
 		return std::get<0>(val);
 	}
@@ -65,34 +73,37 @@ double return_terminal_value(std::tuple<double,double,double>& val, std::string 
 	else if(s == "sum"){
 		return std::get<2>(val);
 	}
+	else if(s == "rand"){
+		return std::get<3>(val);
+	}
 	else{
 		return 0;
 	}
 }
 
-double fill_numerical_values(std::tuple<double,double,double>& val,
-		Collection<std::shared_ptr<Node>>& col){
+double fill_numerical_values(std::tuple<double,double,double,double>& val,
+		Collection<Node> col){
 	std::stack<double> s;
 	//std::cout << '\n';
 	for(std::size_t i = (col.size() - 1); i != -1; i--){
-		if(col.at(i)->_value.type == "function"){
+		if(col.at(i)._value.type == "function"){
 			auto a = s.top();
 			s.pop();
 			auto b = s.top();
 			s.pop();
-			if(col.at(i)->_value.value == "plus"){
+			if(col.at(i)._value.value == "plus"){
 				s.push(a + b);	
 				//std::cout << '(' << a << " + " << b << ')';
 			}
-			else if(col.at(i)->_value.value == "minus"){
+			else if(col.at(i)._value.value == "minus"){
 				s.push(a - b);	
 				//std::cout << '(' << a << " - " << b << ')';
 			}
-			else if(col.at(i)->_value.value == "addition"){
+			else if(col.at(i)._value.value == "multiplication"){
 				s.push(a * b);	
 				//std::cout << '(' << a << " * " << b << ')';
 			}
-			else if(col.at(i)->_value.value == "division"){
+			else if(col.at(i)._value.value == "division"){
 				//std::cout << '(' << a << " / " << b << ')';
 				if(b == 0){
 					s.push(a);
@@ -101,14 +112,22 @@ double fill_numerical_values(std::tuple<double,double,double>& val,
 					s.push(a / b);	
 				}
 			}
+			else if(col.at(i)._value.value == "past_left"){
+				s.push(a);	
+				//std::cout << '(' << a  << ')';
+			}
+			else if(col.at(i)._value.value == "past_right"){
+				s.push(b);	
+				//std::cout << '(' << b << ')';
+			}
 		}
-		else if(col.at(i)->_value.type == "terminal"){
-			////std::cout << "(";
-			//std::cout << col.at(i)->_value.value;
+		else if(col.at(i)._value.type == "terminal"){
+			//std::cout << "(";
+			//std::cout << col.at(i)._value.value;
 			//std::cout << ": ";
-			//std::cout << return_terminal_value(val, col.at(i)->_value.value);
+			//std::cout << return_terminal_value(val, col.at(i)._value.value);
 			//std::cout << ")";
-			s.push(return_terminal_value(val, col.at(i)->_value.value));
+			s.push(return_terminal_value(val, col.at(i)._value.value));
 		}
 	}
 	return s.top();

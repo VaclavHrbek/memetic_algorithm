@@ -7,8 +7,7 @@
 class Node {
 	public:
 		Node() = default;
-		Node(NodeValue val) : _value(val) {};
-		std::shared_ptr<Node> _left;
-		std::shared_ptr<Node> _right;
+		Node(NodeValue val,std::size_t num) : _value(val), _number(num) {};
+		std::size_t _number;
 		NodeValue _value;
 };

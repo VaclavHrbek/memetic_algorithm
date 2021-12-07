@@ -13,14 +13,24 @@ class Collection {
 		T& at(int indx){
 			return _coll.at(indx);
 		}
+
+		const T& at(int indx) const {
+			return _coll.at(indx);
+		}
+
 		void push_back(T item){
 			_coll.emplace_back(item);
 		}
+
+		void push_front(T item){
+			_coll.insert(_coll.begin(), item);
+		}
+		
 		void remove(int indx){
 			_coll.erase(_coll.begin() + indx);
 		}
 		
-		bool empty(){
+		bool empty() const {
 			return _coll.empty();
 		}
 

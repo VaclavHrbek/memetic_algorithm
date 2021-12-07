@@ -3,6 +3,7 @@
 #include <string>
 #include <random>
 
+//TODO create random class
 static std::random_device r;
 
 class NodeValue{

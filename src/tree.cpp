@@ -1,77 +1,80 @@
 #include <memetic_algorithm/tree.hpp>
 
 Tree::Tree(std::size_t size){
-	_root = create_full_tree(size);
+	create_full_tree(size);
+	fill_tree_with_random_values();
 }
 
-std::shared_ptr<Node> Tree::root(){
-	return _root;
+std::size_t Tree::size() const {
+	return _tree.size();
 }
 
-std::shared_ptr<Node> Tree::create_full_tree(std::size_t depth){
+void Tree::create_full_tree(std::size_t depth){
 	if(depth <= 1){
-		auto t = NodeValue("terminal");
-		auto root = Node(t);
-		
-		return std::make_shared<Node>(root);
+		_tree.push_back(Node(NodeValue("terminal"), 0));
+		return;
 	}
 
-	std::queue<std::shared_ptr<Node>> s{};
-	auto f = NodeValue("function");
-	auto root = Node(f);
-	auto root_ptr = std::make_shared<Node>(root);
-	s.push(root_ptr);
+	std::size_t f_n_c = std::pow(2, depth-1) - 1;
+	std::size_t i = 0;
+	for(i = 0; i != f_n_c; i++){
+		_tree.push_back(Node(NodeValue("function"), i));
 
-	int f_n_c = std::pow(2, depth-2) - 1;
-	
-	//std::cout << f_n_c << '\n';
-	int n_c = 0;
+	}
+	for(std::size_t a = -1; a != f_n_c; a++){
+		_tree.push_back(Node(NodeValue("terminal"), a + i + 1));
+	}
+}
 
-	while(not s.empty()){
-		auto current = s.front();
-		n_c++;
-		if(n_c <= f_n_c){
-			auto f2 = NodeValue("function");
-			auto r = std::make_shared<Node>(f2);
-			current->_right = r;
-			s.push(r);
-			auto f1 = NodeValue("function");
-			auto l = std::make_shared<Node>(f1);
-			current->_left = l;
-			s.push(l);
+void Tree::fill_tree_with_random_values(){
+	for(int i = 0; i != _tree.size(); i++){
+		if(_tree.at(i)._value.type == "function"){
+			_tree.at(i)._value.value = random_function();
 		}
 		else{
-			auto t = NodeValue("terminal");
-			auto l = std::make_shared<Node>(t);
-			current->_left = l;
-			t = NodeValue("terminal");
-			auto r = std::make_shared<Node>(t);
-			current->_right = r;
+			_tree.at(i)._value.value = random_terminal();
 		}
-		s.pop();
 	}
-	return root_ptr;
 }
 
-Collection<std::shared_ptr<Node>> create_collection_from_tree(std::shared_ptr<Node> root){
-	std::stack<std::shared_ptr<Node>> s{};
-	s.push(root);
-	Collection<std::shared_ptr<Node>> coll;
+void Tree::print() const {
+	for(std::size_t i = 0; i != _tree.size(); i++){
+		std::cout << _tree.at(i)._value.value;
+		std::cout << " id: ";
+		std::cout << _tree.at(i)._number;
+		std::cout << '\n';
+	}
+}
+
+Node& Tree::at(std::size_t i){
+	return _tree.at(i);
+}
+
+std::tuple<Tree, Tree> crossover(Tree t1, Tree t2, std::size_t p){
+	std::stack<Node> s{};
+	s.push(t1.at(p));
 	while(not s.empty()){
-		auto current = s.top();
+		auto curr = s.top();
 		s.pop();
-		coll.push_back(current);
-		if(current->_value.type == "function"){
-			s.push(current->_left);
-			s.push(current->_right);
+		if(curr._value.type == "terminal"){
+			std::swap(t1.at(curr._number), t2.at(curr._number));
+		}
+		else{
+			s.push(t1.at((curr._number * 2) + 1));
+			s.push(t2.at((curr._number * 2) + 2));
+			std::swap(t1.at(curr._number), t2.at(curr._number));
 		}
 	}
-	return coll;
+	return std::make_tuple(t1, t2);
 }
 
-
-
-
-
-
+Tree mutate(Tree t, std::size_t p){
+	if(t.at(p)._value.type == "function"){
+		t.at(p)._value.value = random_function();
+	}
+	else{
+		t.at(p)._value.value = random_terminal();
+	}
+	return t;
+}
 

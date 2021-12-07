@@ -6,7 +6,7 @@
 
 class Population {
 	public:
-		void create_population(std::size_t size_pop, std::size_t size_tree, std::size_t max_size);
+		void create_population(std::size_t size_pop, std::size_t size_tree);
 		void print_at(int indx);
 		void print_best();
 		std::size_t size() const ;
