@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include "city.hpp"
+#include <memetic_algorithm/city.hpp>
 
 TEST_CASE("No class"){
 	std::vector<double> vec_double{ 1, 2, 3, 4, 4, 3.1, 8.5, 2.1, 9.6, 0.1, 5.2 };

@@ -1,0 +1,25 @@
+#pragma once 
+
+#include <stack>
+#include <iostream>
+#include <queue>
+#include <cmath>
+
+#include <memetic_algorithm/node.hpp>
+#include <memetic_algorithm/node_value.hpp>
+#include <memetic_algorithm/collection.hpp>
+
+class Tree {
+	public: 
+		Tree() = default;
+		Tree(Collection<std::shared_ptr<Node>> n) : _nodes(n) {};
+		Tree(std::size_t size) : _nodes(size) {};
+
+		Collection<std::shared_ptr<Node>> _nodes;
+
+		void create_full_tree(std::size_t depth);
+		void print_tree();
+		void fill_tree_with_random_values();
+	private:
+};
+
